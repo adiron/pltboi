@@ -26,17 +26,20 @@ function App() {
   }
 
   return (
-    <div
+    <>
+      <div
       className="flex flex-col gap-4"
-    >
-    { palettes.map((p, i) => {
-      return <PaletteViewer {...p} onChange={e => handlePaletteChange(e, i)} key={i} />
-    })
-    }
+      >
+      { palettes.map((p, i) => {
+        return <PaletteViewer {...p} onChange={e => handlePaletteChange(e, i)} key={i} />
+      })
+      }
       <button onClick={() => handleAddPalette()}>
-        +
-      </button>
-    </div>
+      +
+        </button>
+      </div>
+      <div>v {__COMMIT_HASH__}</div>
+    </>
   )
 }
 
