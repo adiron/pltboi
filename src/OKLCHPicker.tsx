@@ -1,4 +1,4 @@
-import { convert, deserialize, listColorSpaces, OKLCH, RGBToHex, sRGB, Vector, sRGBGamut, gamutMapOKLCH, MapToL, MapToCuspL } from "@texel/color";
+import { convert, deserialize, listColorSpaces, OKLCH, RGBToHex, sRGB, Vector, sRGBGamut, gamutMapOKLCH, MapToL  } from "@texel/color";
 import { ChangeEvent, useEffect, useState } from "react";
 
 interface OKLCHPickerProps { 
