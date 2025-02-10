@@ -1,4 +1,4 @@
-import { convert, deserialize, listColorSpaces, OKLCH, RGBToHex, sRGB, Vector, sRGBGamut, gamutMapOKLCH } from "@texel/color";
+import { convert, deserialize, listColorSpaces, OKLCH, RGBToHex, sRGB, Vector, sRGBGamut, gamutMapOKLCH, MapToL, MapToCuspL } from "@texel/color";
 import { ChangeEvent, useEffect, useState } from "react";
 
 interface OKLCHPickerProps { 
@@ -36,7 +36,7 @@ export default function OKLCHPicker({value, onChange, visible} : OKLCHPickerProp
   }
 
   function handleChange(v: Vector) {
-    const mapped = gamutMapOKLCH(v, sRGBGamut, OKLCH);
+    const mapped = gamutMapOKLCH(v, sRGBGamut, OKLCH, undefined, MapToL);
     onChange(mapped);
   }
 
@@ -69,9 +69,9 @@ export default function OKLCHPicker({value, onChange, visible} : OKLCHPickerProp
           className="h-2 w-40"
           type="range"
           min="0" 
-          max="1"
+          max="0.5"
           value={value[1]}
-          step={1 / 100}
+          step={1 / 500}
           onChange={(e) => handleChange([value[0], parseFloat(e.target.value), value[2]])}
         />
         {value[1].toFixed(2)}

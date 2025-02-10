@@ -1,4 +1,4 @@
-import { lerp, lerpAngle, OKLCH, serialize, sRGB, Vector } from "@texel/color"
+import { gamutMapOKLCH, lerp, lerpAngle, MapToL, OKLCH, serialize, sRGB, sRGBGamut, Vector } from "@texel/color"
 import { mapRange } from "./utils";
 
 export interface MakePaletteParams {
@@ -27,6 +27,11 @@ export function makePalette({
   if (steps[0] === midpointStep || steps[steps.length - 1] === midpointStep) {
     throw new Error("Invalid midpoint step");
   }
+
+  // Map all of the colors
+  min = gamutMapOKLCH(min, sRGBGamut, OKLCH, undefined, MapToL);
+  mid = gamutMapOKLCH(mid, sRGBGamut, OKLCH, undefined, MapToL);
+  max = gamutMapOKLCH(max, sRGBGamut, OKLCH, undefined, MapToL);
 
   return Object.fromEntries(steps.map((step, stepIndex) => {
     if (stepIndex === 0) {
