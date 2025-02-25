@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import PaletteViewer from './PaletteViewer';
 import { MakePaletteParams } from './palette';
+import Jumpy from './Jumpy';
 
 function makeRandomPalette(): MakePaletteParams {
   const hue = Math.random() * 360;
@@ -26,7 +27,10 @@ function App() {
   }
 
   return (
-    <>
+    <div className="p-5">
+      <div className="text-xl">
+        <Jumpy text="pltboi" className="text-xl" />
+      </div>
       <div
       className="flex flex-col gap-4"
       >
@@ -38,8 +42,8 @@ function App() {
       +
         </button>
       </div>
-      <div>v {__COMMIT_HASH__}</div>
-    </>
+      <Jumpy className="text-sm" text={`version ${__COMMIT_HASH__}`}></Jumpy>
+    </div>
   )
 }
 
