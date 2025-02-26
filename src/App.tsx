@@ -26,23 +26,37 @@ function App() {
     setPalettes([...palettes, makeRandomPalette()])
   }
 
+  function handleDelete(i: number) {
+    setPalettes(palettes.filter((_, j) => i !== j));
+  }
+
   return (
-    <div className="p-5">
-      <div className="text-xl">
-        <Jumpy text="pltboi" className="text-xl" />
+    <div className="p-8 grid grid-rows-(--app-grid) min-h-screen">
+      <div className="w-full text-center pb-16 tracking-tight">
+        <Jumpy
+          text="pltboi"
+          className="text-4xl bold"
+        />
       </div>
       <div
-      className="flex flex-col gap-4"
+        className="flex flex-col gap-8 text-center items-center"
       >
       { palettes.map((p, i) => {
-        return <PaletteViewer {...p} onChange={e => handlePaletteChange(e, i)} key={i} />
-      })
-      }
-      <button onClick={() => handleAddPalette()}>
-      +
-        </button>
+        return <PaletteViewer {...p} onChange={e => handlePaletteChange(e, i)} onDelete={() => handleDelete(i)} key={`${i},${p.mid[2]}`} />
+      }) }
+      <button 
+        className="cursor-pointer h-15 w-15 rounded bg-gray-200 hover:bg-(image:--rainbow) bg-[length:500%_100%] b hover:animate-bgscroll border-gray-300 hover:border-gray-500 transition-all border"
+        onClick={() => handleAddPalette()}
+      >
+        +
+      </button>
       </div>
-      <Jumpy className="text-sm" text={`version ${__COMMIT_HASH__}`}></Jumpy>
+      <div className="w-full text-center">
+        <Jumpy className="text-md" text={`version ${__COMMIT_HASH__}`}></Jumpy>
+        <a target="_blank" href="https://adiron.me">
+          <Jumpy text="ADI RON me fecit" className="hover:text-blue-500" />
+        </a>
+      </div>
     </div>
   )
 }

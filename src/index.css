@@ -1,4 +1,23 @@
 @import "tailwindcss";
+
 @theme {
   --font-sans: "Inter", sans-serif;
+  --app-grid: auto 1fr auto;
+  --rainbow: linear-gradient(90deg in oklch longer hue, salmon, salmon);
+
+  --animate-bgscroll: bgscroll 4s ease-out forwards;
+  @keyframes bgscroll {
+    0%, {
+      background-position-x: 0%;
+    }
+
+    100% {
+      background-position-x: 100%;
+    }
+  }
+
+}
+
+html {
+  background: var(--color-gray-100);
 }

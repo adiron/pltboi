@@ -1,5 +1,6 @@
 import { deserialize, listColorSpaces, convert, OKLCH } from "@texel/color";
 import { classOptional } from "./utils";
+import { useMemo } from "react";
 
 const LIGHTNESS_BREAKPOINT = 0.57;
 
@@ -18,9 +19,7 @@ export default function Swatch({color, name, children, editable, onClick} : Swat
 
   return <div
     className={classOptional({ 
-      "hover:bg-gray-100": true,
       "cursor-pointer": true,
-      "transition-background-color": true ,
       "relative": true,
       "text-white": !backgroundLight,
       "text-black": backgroundLight,
@@ -29,14 +28,17 @@ export default function Swatch({color, name, children, editable, onClick} : Swat
     onClick={onClick}
   >
     <div
-      className="w-15 h-15"
+      className="w-15 h-15 hover:rounded-[30%] transition-[border_radius]"
       style={{
         backgroundColor: color
       }}
     >
-      {/* This is here to prevent clicking the picker from triggering a click */}
-      <div onClick={e => e.stopPropagation()}>
-      {name && <div className="text-center text-sm m-auto">
+    {/* This is here to prevent clicking the picker from triggering a click */}
+      <div 
+        onClick={e => e.stopPropagation()}
+        className="grid h-full"
+      >
+      {name && <div className="text-center text-sm m-auto opacity-0 group-hover/palette:opacity-100 transition-opacity duration-700">
         {name}
         </div>
       }
