@@ -51,10 +51,12 @@ function App() {
         +
       </button>
       </div>
-      <div className="w-full text-center">
-        <Jumpy className="text-md" text={`version ${__COMMIT_HASH__}`}></Jumpy>
+      <div className="w-full text-center text-md">
+        <a target="_blank" href={`https://github.com/adiron/pltboi/tree/${__COMMIT_HASH__}`}>
+          <Jumpy text={`version ${__COMMIT_HASH__}`}></Jumpy>
+        </a>
         <a target="_blank" href="https://adiron.me">
-          <Jumpy text="ADI RON me fecit" className="hover:text-blue-500" />
+          <Jumpy text="ADI RON me fecit" />
         </a>
       </div>
     </div>
