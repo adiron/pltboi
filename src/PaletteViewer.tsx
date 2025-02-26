@@ -5,20 +5,31 @@ import OKLCHPicker from "./OKLCHPicker";
 
 interface PaletteViewerProps extends MakePaletteParams {
   onChange: (p: MakePaletteParams) => void;
+  onDelete: () => void;
 }
 
-function PaletteViewer({ onChange, ...params } : PaletteViewerProps) {
+type EditingState = "min"|"mid"|"max"|null;
+
+function PaletteViewer({ onChange, onDelete, ...params } : PaletteViewerProps) {
   const palette = useMemo(() => {
     return makePalette(params);
   }, [params]);
 
   const sortedSteps = params.steps.slice().sort((a, b) => a - b);
 
-  const [ editing, setEditing ] = useState<"min"|"mid"|"max"|null>(null);
+  const [ editing, setEditing ] = useState<EditingState>(null);
+
+  function toggleEditing(state: EditingState) {
+    if (state === editing) {
+      setEditing(null);
+    } else {
+      setEditing(state);
+    }
+  }
   
   return (
     <div
-      className="flex gap-0"
+      className="flex gap-0 group/palette"
     >
       {
         Object.entries(palette).map(([step, color]) => {
@@ -27,7 +38,7 @@ function PaletteViewer({ onChange, ...params } : PaletteViewerProps) {
               name={step}
               color={color}
               key={step}
-              onClick={() => editing === "min" ? setEditing(null) : setEditing("min")}
+              onClick={() => toggleEditing("min")}
               editable
             >
               <OKLCHPicker 
@@ -42,7 +53,7 @@ function PaletteViewer({ onChange, ...params } : PaletteViewerProps) {
               name={step}
               color={color}
               key={step}
-              onClick={() => editing === "max" ? setEditing(null) : setEditing("max")}
+              onClick={() => toggleEditing("max")}
               editable
             >
               <OKLCHPicker 
@@ -57,7 +68,7 @@ function PaletteViewer({ onChange, ...params } : PaletteViewerProps) {
               name={step}
               color={color}
               key={step}
-              onClick={() => editing === "mid" ? setEditing(null) : setEditing("mid")}
+              onClick={() => toggleEditing("mid")}
               editable
             >
               <OKLCHPicker 
@@ -77,6 +88,7 @@ function PaletteViewer({ onChange, ...params } : PaletteViewerProps) {
           )
         })
       }
+      <button title="Delete palette" onClick={() => onDelete()}>X</button>
     </div>
   )
 }
