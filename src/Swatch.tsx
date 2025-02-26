@@ -12,9 +12,9 @@ interface SwatchProps extends React.PropsWithChildren {
 }
 
 export default function Swatch({color, name, children, editable, onClick} : SwatchProps) {
-  const deserialized = deserialize(color);
+  const deserialized = useMemo(() => deserialize(color), [color]);
   const space = listColorSpaces().find(f => f.id === deserialized.id);
-  const lch = convert(deserialized.coords, space!, OKLCH);
+  const lch = useMemo(() => convert(deserialized.coords, space!, OKLCH), [deserialized, space]);
   const backgroundLight = LIGHTNESS_BREAKPOINT < lch[0];
 
   return <div
