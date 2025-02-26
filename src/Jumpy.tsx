@@ -44,13 +44,14 @@ export default function Jumpy({text, className} : JumpyProps) {
                       transform: `translateY(${Math.sin(i + dt / 100.0) * 20}%)`,
                     }}
                   >
-                  {c}
-                </span>) :
+                    {c}
+                  </span>) :
       letters.map((c, i) => <span 
                     className="inline-block transition-transform"
-                    key={i}>
-                  {c}
-                </span>)
+                    key={i}
+                  >
+                    {c}
+                  </span>)
   }
   </div>
 }
