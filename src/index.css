@@ -3,6 +3,7 @@
 @theme {
   --font-sans: "Inter", sans-serif;
   --app-grid: auto 1fr auto;
+  --picker-control-grid: 80px 1fr 50px;
   --rainbow: linear-gradient(90deg in oklch longer hue, salmon, salmon);
 
   --animate-bgscroll: bgscroll 4s ease-out forwards;

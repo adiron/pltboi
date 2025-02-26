@@ -9,16 +9,17 @@ interface PaletteViewerProps extends MakePaletteParams {
   onDelete: () => void;
 }
 
-type EditingState = "min"|"mid"|"max"|null;
+export type SwatchRole = "min"|"mid"|"max"|null;
 
 function PaletteViewer({ onChange, onDelete, ...params } : PaletteViewerProps) {
   const palette = useMemo(() => {
     return makePalette(params);
   }, [params]);
 
-  const [ editing, setEditing ] = useState<EditingState>(null);
+  const [ editing, setEditing ] = useState<SwatchRole>(null);
+  const [ hueLock, setHueLock ] = useState<boolean>(false);
 
-  function toggleEditing(state: EditingState) {
+  function toggleEditing(state: SwatchRole) {
     if (state === editing) {
       setEditing(null);
     } else {
@@ -26,7 +27,7 @@ function PaletteViewer({ onChange, onDelete, ...params } : PaletteViewerProps) {
     }
   }
 
-  const getEditingStateForStep = useCallback<(step: number) => EditingState>((color: number) => {
+  const getEditingStateForStep = useCallback<(step: number) => SwatchRole>((color: number) => {
     const sortedSteps = params.steps.slice().sort((a, b) => a - b);
 
     if (color === sortedSteps[0]) {
@@ -44,7 +45,7 @@ function PaletteViewer({ onChange, onDelete, ...params } : PaletteViewerProps) {
   return (
     <div
       className={classOptional({
-        "flex gap-0 group/palette": true,
+        "flex gap-0 group/palette ml-19": true,
         "active": editing !== null,
       })}
     >
@@ -64,7 +65,10 @@ function PaletteViewer({ onChange, onDelete, ...params } : PaletteViewerProps) {
                 value={params[targetState]}
                 key={step}
                 onChange={e => onChange({...params, [targetState]: e})}
+                onHueLockChange={e => setHueLock(e)}
                 visible={editing === targetState}
+                hueLock={hueLock}
+                role={targetState}
               />
             }
           </Swatch>
@@ -73,7 +77,7 @@ function PaletteViewer({ onChange, onDelete, ...params } : PaletteViewerProps) {
       <button
         title="Delete palette"
         onClick={() => onDelete()}
-        className="ml-4"
+        className="ml-4 opacity-30 hover:opacity-100 group-hover/palette:opacity-50 cursor-pointer h-15 w-15 rounded bg-transparent hover:bg-gray-300 b border-gray-300 hover:border-gray-500 transition-all border"
       >
         ×
       </button>
