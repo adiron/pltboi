@@ -14,20 +14,27 @@ function makeRandomPalette(): MakePaletteParams {
   }
 }
 
+type PalettesList = [string, MakePaletteParams][];
+
 function App() {
 
-  const [ palettes, setPalettes ] = useState<MakePaletteParams[]>([makeRandomPalette()])
+  const [ palettes, setPalettes ] = useState<PalettesList>([[crypto.randomUUID(), makeRandomPalette()]])
 
-  function handlePaletteChange(p : MakePaletteParams, i: number) {
-    setPalettes(palettes.map((d, j) => j === i ? p : d));
+  function handlePaletteChange(newP : MakePaletteParams, targetUuid: string) {
+    setPalettes(
+      palettes.map((p) => p[0] === targetUuid ? [p[0], newP] : p)
+    );
   }
 
   function handleAddPalette() {
-    setPalettes([...palettes, makeRandomPalette()])
+    setPalettes([
+      ...palettes,
+      [crypto.randomUUID(), makeRandomPalette()]
+    ]);
   }
 
-  function handleDelete(i: number) {
-    setPalettes(palettes.filter((_, j) => i !== j));
+  function handleDelete(targetUuid: string) {
+    setPalettes(palettes.filter(([uuid, _p]) => targetUuid !== uuid));
   }
 
   return (
@@ -41,8 +48,8 @@ function App() {
       <div
         className="flex flex-col gap-8 text-center items-center"
       >
-      { palettes.map((p, i) => {
-        return <PaletteViewer {...p} onChange={e => handlePaletteChange(e, i)} onDelete={() => handleDelete(i)} key={`${i},${p.mid[2]}`} />
+      { palettes.map(([uuid, p]) => {
+        return <PaletteViewer {...p} onChange={e => handlePaletteChange(e, uuid)} onDelete={() => handleDelete(uuid)} key={uuid} />
       }) }
       <button 
         className="cursor-pointer h-15 w-15 rounded bg-gray-200 hover:bg-(image:--rainbow) bg-[length:500%_100%] b hover:animate-bgscroll border-gray-300 hover:border-gray-500 transition-all border"

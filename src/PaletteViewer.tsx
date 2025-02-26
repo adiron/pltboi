@@ -1,7 +1,8 @@
-import { useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import Swatch from "./Swatch";
 import { makePalette, MakePaletteParams } from "./palette";
 import OKLCHPicker from "./OKLCHPicker";
+import { classOptional } from "./utils";
 
 interface PaletteViewerProps extends MakePaletteParams {
   onChange: (p: MakePaletteParams) => void;
@@ -15,8 +16,6 @@ function PaletteViewer({ onChange, onDelete, ...params } : PaletteViewerProps) {
     return makePalette(params);
   }, [params]);
 
-  const sortedSteps = params.steps.slice().sort((a, b) => a - b);
-
   const [ editing, setEditing ] = useState<EditingState>(null);
 
   function toggleEditing(state: EditingState) {
@@ -26,69 +25,58 @@ function PaletteViewer({ onChange, onDelete, ...params } : PaletteViewerProps) {
       setEditing(state);
     }
   }
+
+  const getEditingStateForStep = useCallback<(step: number) => EditingState>((color: number) => {
+    const sortedSteps = params.steps.slice().sort((a, b) => a - b);
+
+    if (color === sortedSteps[0]) {
+      return "min";
+    }
+    if (color === sortedSteps[sortedSteps.length - 1]) {
+      return "max";
+    }
+    if (color === params.midpointStep) {
+      return "mid";
+    }
+    return null;
+  }, [params.midpointStep, params.steps]);
   
   return (
     <div
-      className="flex gap-0 group/palette"
+      className={classOptional({
+        "flex gap-0 group/palette": true,
+        "active": editing !== null,
+      })}
     >
       {
         Object.entries(palette).map(([step, color]) => {
-          if (parseInt(step) === sortedSteps[0]) {
-            return <Swatch
-              name={step}
-              color={color}
-              key={step}
-              onClick={() => toggleEditing("min")}
-              editable
-            >
-              <OKLCHPicker 
-                value={params.min}
-                onChange={e => onChange({...params, min: e})}
-                visible={editing === "min"}
-              />
-            </Swatch>
-          }
-          if (parseInt(step) === sortedSteps[sortedSteps.length - 1]) {
-            return <Swatch
-              name={step}
-              color={color}
-              key={step}
-              onClick={() => toggleEditing("max")}
-              editable
-            >
-              <OKLCHPicker 
-                value={params.max}
-                onChange={e => onChange({...params, max: e})}
-                visible={editing === "max"}
-              />
-            </Swatch>
-          }
-          if (parseInt(step) === params.midpointStep) {
-            return <Swatch
-              name={step}
-              color={color}
-              key={step}
-              onClick={() => toggleEditing("mid")}
-              editable
-            >
-              <OKLCHPicker 
-                value={params.mid}
-                onChange={e => onChange({...params, mid: e})}
-                visible={editing === "mid"}
-              />
-            </Swatch>
-          }
+          const targetState = getEditingStateForStep(parseInt(step))
 
-          return (
-            <Swatch 
-              name={step}
-              color={color}
-              key={step}
-            />
-          )
+          return <Swatch
+            name={step}
+            color={color}
+            key={step}
+            onClick={targetState ? (() => toggleEditing(targetState)) : undefined}
+            editable={targetState !== null}
+            active={targetState !== null && targetState === editing}
+          >
+            { targetState !== null && <OKLCHPicker 
+                value={params[targetState]}
+                key={step}
+                onChange={e => onChange({...params, [targetState]: e})}
+                visible={editing === targetState}
+              />
+            }
+          </Swatch>
         })
       }
-      <button title="Delete palette" onClick={() => onDelete()}>X</button>
+      <button
+        title="Delete palette"
+        onClick={() => onDelete()}
+        className="ml-4"
+      >
+        ×
+      </button>
     </div>
   )
 }

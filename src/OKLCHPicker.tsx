@@ -40,11 +40,7 @@ export default function OKLCHPicker({value, onChange, visible} : OKLCHPickerProp
     onChange(mapped);
   }
 
-  if (!visible) {
-    return <></>;
-  }
-
-  return <div className="border-1 p-2 absolute bg-gray-100 top-30 z-1">
+  return <div className={`border-1 p-2 absolute bg-gray-100 top-20 z-1 ${!visible ? "hidden" : ""}`}>
     <div className="flex gap-2 items-center text-gray-600">
       <div className="w-25">
         Lightness
