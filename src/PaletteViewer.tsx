@@ -3,6 +3,8 @@ import Swatch from "./Swatch";
 import { makePalette, MakePaletteParams } from "./palette";
 import OKLCHPicker from "./OKLCHPicker";
 import { classOptional } from "./utils";
+import { Vector } from "@texel/color";
+import { gamutMapOKLCH, sRGBGamut, OKLCH, MapToL } from "@texel/color";
 
 interface PaletteViewerProps extends MakePaletteParams {
   onChange: (p: MakePaletteParams) => void;
@@ -10,6 +12,7 @@ interface PaletteViewerProps extends MakePaletteParams {
 }
 
 export type SwatchRole = "min"|"mid"|"max"|null;
+export type NonNullSwatchRole = Exclude<SwatchRole, null>;
 
 function PaletteViewer({ onChange, onDelete, ...params } : PaletteViewerProps) {
   const palette = useMemo(() => {
@@ -17,7 +20,7 @@ function PaletteViewer({ onChange, onDelete, ...params } : PaletteViewerProps) {
   }, [params]);
 
   const [ editing, setEditing ] = useState<SwatchRole>(null);
-  const [ hueLock, setHueLock ] = useState<boolean>(false);
+  const [ hueLock, setHueLock ] = useState<boolean>(true);
 
   function toggleEditing(state: SwatchRole) {
     if (state === editing) {
@@ -27,7 +30,38 @@ function PaletteViewer({ onChange, onDelete, ...params } : PaletteViewerProps) {
     }
   }
 
-  const getEditingStateForStep = useCallback<(step: number) => SwatchRole>((color: number) => {
+  const handleColorChange = useCallback((role: NonNullSwatchRole, newColor: Vector) => {
+    if (!hueLock) {
+      return onChange({...params, [role]: newColor})
+    }
+
+    const newHue = newColor[2];
+    return onChange({
+      ...params,
+      min: gamutMapOKLCH([ ...params.min.slice(0,2), newHue ], sRGBGamut, OKLCH, undefined, MapToL),
+      mid: gamutMapOKLCH([ ...params.mid.slice(0,2), newHue ], sRGBGamut, OKLCH, undefined, MapToL),
+      max: gamutMapOKLCH([ ...params.max.slice(0,2), newHue ], sRGBGamut, OKLCH, undefined, MapToL),
+      [role]: newColor,
+    });
+
+  }, [hueLock, onChange, params]);
+
+  const handleHueLockChange = useCallback((newState: boolean, role: NonNullSwatchRole) => {
+    if (!newState) {
+      return setHueLock(newState);
+    }
+
+    const newHue = params[role][2];
+    setHueLock(newState);
+    return onChange({
+      ...params,
+      min: gamutMapOKLCH([ ...params.min.slice(0,2), newHue ], sRGBGamut, OKLCH, undefined, MapToL),
+      mid: gamutMapOKLCH([ ...params.mid.slice(0,2), newHue ], sRGBGamut, OKLCH, undefined, MapToL),
+      max: gamutMapOKLCH([ ...params.max.slice(0,2), newHue ], sRGBGamut, OKLCH, undefined, MapToL),
+    });
+  }, [params, onChange])
+
+  const getEditingStateForStep = useCallback<(step: number) => SwatchRole>((color) => {
     const sortedSteps = params.steps.slice().sort((a, b) => a - b);
 
     if (color === sortedSteps[0]) {
@@ -64,8 +98,8 @@ function PaletteViewer({ onChange, onDelete, ...params } : PaletteViewerProps) {
             { targetState !== null && <OKLCHPicker 
                 value={params[targetState]}
                 key={step}
-                onChange={e => onChange({...params, [targetState]: e})}
-                onHueLockChange={e => setHueLock(e)}
+                onChange={e => handleColorChange(targetState, e)}
+                onHueLockChange={e => handleHueLockChange(e, targetState)}
                 visible={editing === targetState}
                 hueLock={hueLock}
                 role={targetState}

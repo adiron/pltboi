@@ -7,7 +7,7 @@ interface OKLCHPickerProps {
   value: Vector;
   onChange: (v: Vector) => void;
   visible?: boolean;
-  onHueLockChange?: (e: boolean) => void;
+  onHueLockChange: (e: boolean) => void;
   hueLock: boolean;
   role: SwatchRole;
 }
@@ -112,8 +112,10 @@ export default function OKLCHPicker({value, onChange, visible, role, hueLock, on
         />
         <div className="text-right">
           {value[2].toFixed(0)}°
+          <input type="checkbox" checked={hueLock} onChange={(e) => onHueLockChange(e.target.checked)} />
         </div>
       </div>
+
       <div className="grid grid-cols-(--picker-control-grid) gap-2 items-center text-gray-600">
         <div className="">
           Hex equiv.
