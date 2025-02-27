@@ -1,24 +1,18 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import PaletteViewer from './PaletteViewer';
 import { MakePaletteParams } from './palette';
 import Jumpy from './Jumpy';
+import { loadPaletteListOrFallback, makeRandomPalette } from './utils';
 
-function makeRandomPalette(): MakePaletteParams {
-  const hue = Math.random() * 360;
-  return {
-    min: [ 0.8382, 0.0493, hue ],
-    mid: [ 0.5000, 0.30, hue ],
-    max: [ 0.2665, 0.0499, hue ],
-    steps: [5, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100],
-    midpointStep: 50,
-  }
-}
-
-type PalettesList = [string, MakePaletteParams][];
+export type PalettesList = [string, MakePaletteParams][];
 
 function App() {
+  const [ palettes, setPalettes ] = useState<PalettesList>(() => loadPaletteListOrFallback());
 
-  const [ palettes, setPalettes ] = useState<PalettesList>([[crypto.randomUUID(), makeRandomPalette()]])
+  useEffect(() => {
+    console.log("Saving palettes");
+    localStorage.setItem("palettes", JSON.stringify(palettes));
+  }, [palettes]);
 
   function handlePaletteChange(newP : MakePaletteParams, targetUuid: string) {
     setPalettes(
