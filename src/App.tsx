@@ -10,7 +10,6 @@ function App() {
   const [ palettes, setPalettes ] = useState<PalettesList>(() => loadPaletteListOrFallback());
 
   useEffect(() => {
-    console.log("Saving palettes");
     localStorage.setItem("palettes", JSON.stringify(palettes));
   }, [palettes]);
 

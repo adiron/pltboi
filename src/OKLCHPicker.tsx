@@ -2,6 +2,7 @@ import { convert, deserialize, listColorSpaces, OKLCH, RGBToHex, sRGB, Vector, s
 import { ChangeEvent, useEffect, useState } from "react";
 import { SwatchRole } from "./PaletteViewer";
 import { classOptional } from "./utils";
+import Slider from "./Slider";
 
 interface OKLCHPickerProps { 
   value: Vector;
@@ -112,7 +113,6 @@ export default function OKLCHPicker({value, onChange, visible, role, hueLock, on
         />
         <div className="text-right">
           {value[2].toFixed(0)}°
-          <input type="checkbox" checked={hueLock} onChange={(e) => onHueLockChange(e.target.checked)} />
         </div>
       </div>
 
@@ -125,6 +125,9 @@ export default function OKLCHPicker({value, onChange, visible, role, hueLock, on
           value={serialized}
           onChange={handleSerialize}
         />
+      </div>
+      <div>
+        <Slider checked={hueLock} onChange={(e) => onHueLockChange(e)} />
       </div>
     </div>
   </div>
